@@ -1,0 +1,84 @@
+body {
+    margin: 0;
+    overflow: hidden;
+}
+canvas {
+    width: 100%;
+    height: 100%;
+}
+
+#info {
+    position: absolute;
+}
+
+#runningScore {
+    position: absolute;
+    color: white;
+    bottom: 0;
+    right: 0;
+    font-family: 'Press Start 2P', cursive;
+    margin: 3rem;
+}
+
+#hud {
+    position: absolute;
+    display: block;
+    text-align: center;
+    width: 100%;
+}
+
+#shieldHUD {
+    position: fixed;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+    grid-template-areas: "shieldText"
+                         "img";
+    bottom: 0;
+    left: 0;
+    margin: 1vh;
+    margin-left: 3%;
+    visibility: hidden
+}
+
+#shieldHUD h3 {
+    grid-area: shieldText;
+    color: white;
+    font-size: 1.2rem;
+    font-family: 'Press Start 2P', cursive;
+}
+
+#shields {
+    grid-area: img;
+    position: fixed;
+    display: flex;
+    bottom: 0;
+    left: 0;
+    margin: 6vh;
+    box-sizing: border-box;
+    border: 1px solid white;
+    height: 2rem;
+    width: 6rem;
+}
+
+#endGame {
+    visibility: hidden;
+    border: 1px solid black;
+    background: rgba(0,0,255, .2);
+    position: fixed;
+    padding: 10vh;
+    font-family: 'Press Start 2P', cursive;
+    text-align: center;
+    line-height: 2rem;
+    top: 50%;
+    left: 50%;
+    color: white;
+    transform: translate(-50%, -50%);
+}
+
+
+#bar {
+    background-color: blue;
+    width: 100%;
+    height: 100%
+}
