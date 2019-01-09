@@ -1,17 +1,16 @@
+/* Global Variables */
+let scene, camera, renderer;
+let shipModel, pointLight;
+let clock, velocity, acceleration;
+let raycaster, keyboard;
+let gameOver;
+let score, highScores, initials;
 const maxHighScores = 5;
 
-// Global Variables
-let scene, camera, renderer;
-let shipModel, pointLight, stars;
-let clock, velocity, acceleration;
-let raycaster;
-let keyboard, gameOver;
-let score, highScores;
-
-let initials;
-
-// Post Processing Variables
-let renderScene, bloomPass, composer;
+// Particles
+let stars;
+let obstacleMax = 10;
+const obstacles = [];
 
 const player = {
     health: null,
@@ -20,31 +19,28 @@ const player = {
 
 const audio = [];
 
-let obstacles = [];
-let obstacleMax = 10;
-
-
-
-// cached DOM Elements
-const welcomeScreen = document.querySelector('#welcome-screen');
-const debugTxt = document.querySelector('#debug-data');
-const endGame = document.querySelector('#endGame');
-const shields = document.querySelector('#shields');
-const shieldHUD = document.querySelector('#shieldHUD');
-const shieldBar = document.querySelector('#bar');
-const runningScore = document.querySelector('#runningScore');
-const scoreButton = document.querySelector('#submit-score');
-const initialsField = document.querySelector('#enterScore')
-const highScorer = document.querySelector('#highScorer')
-const startBtn = document.querySelector('#start')
-
-// Post processing
+// Post Processing
+let renderScene, bloomPass, composer;
 const params = {
     exposure: 1.0,
     bloomStrength: 1.0,
     bloomThreshold: 0,
     bloomRadius: 0
 };
+
+// cached DOM Elements
+const welcomeScreen = document.querySelector('#welcome-screen');
+const startBtn = document.querySelector('#start');
+
+const shields = document.querySelector('#shields');
+const shieldHUD = document.querySelector('#shieldHUD');
+const shieldBar = document.querySelector('#bar');
+const runningScore = document.querySelector('#runningScore');
+
+const scoreButton = document.querySelector('#submit-score');
+const endGame = document.querySelector('#endGame');
+const initialsField = document.querySelector('#enterScore')
+const highScorer = document.querySelector('#highScorer')
 
 // Event Listeners
 start.addEventListener('click', init);
@@ -70,15 +66,8 @@ scoreButton.addEventListener('click', () => {
     initialsField.value = '';
 });
 
+// do it
 displayWelcome();
-
-
-function displayWelcome(){
-    console.log('hello')
-    welcomeScreen.visibility = 'visible'
-
-}
-
 
 function init(){
     welcomeScreen.visibility = 'hidden'
@@ -135,17 +124,7 @@ function init(){
     keyboard = new THREEx.KeyboardState();
 
 
-    // ENVIRONMENT
-    const floor = new THREE.Mesh(
-        new THREE.PlaneGeometry(10,10,10, 10),
-        new THREE.MeshPhongMaterial( { color: 0x00ffea, side: THREE.DoubleSide, wireframe: false } )
-    )
-
-    floor.receiveShadow = true;
-    floor.rotation.x = Math.PI/2
-    floor.scale.set(20,20,50);
-    scene.add(floor);
-
+    // environment
     stars = new Array(20).fill(null);
     for (let i in stars){
         let size = rand(0.1, 1.0)
@@ -157,7 +136,8 @@ function init(){
         scene.add(stars[i]);
     }
 
-    // Obstacles
+    // obstacles
+    obstacleMax = 10;
     for(let i = 0; i < 50; i++){
         let obstacle = new THREE.Mesh(
             new THREE.BoxGeometry(rand(1,5),rand(1,5),rand(4,5)),
@@ -170,16 +150,14 @@ function init(){
         scene.add(obstacle)
     }
 
-
+    // lighting
     scene.add(new THREE.AmbientLight(0x111111))
-
 
     pointLight = new THREE.PointLight(0xffffff, 0.7);
     pointLight.castShadow = true;
     pointLight.position.set(0,10,6)
    
     scene.add(pointLight)
-
     
     // renderer
     renderer = new THREE.WebGLRenderer();
@@ -202,6 +180,7 @@ function init(){
     composer.addPass(renderScene);
     composer.addPass(bloomPass)
 
+    // time delayed call to gameLoop
     setTimeout(gameLoop, 1000);
 }
 
@@ -279,60 +258,5 @@ function gameLoop(){
     }
     renderer.clear();
     composer.render();
-    gameOver ? endingScreen() : requestAnimationFrame(gameLoop);
-}
-
-function endingScreen(){
-    clock.stop();
-    document.querySelector('#endGame > p > span').textContent = score;
-    highScorer.style.visibility = 'hidden';
-
-    // check if made high score list
-    highScorer.style.visibility = (highScores.length < maxHighScores || score > highScores[highScores.length - 1].score) ? 'visible' : 'hidden';
-    endGame.style.visibility = 'visible'
-    velocity = 0.01;
-}
-
-function keyControls() {
-    if( keyboard.pressed( 'W' ) ) {
-        if( shipModel.position.y < 3.0 ) shipModel.position.y += 0.1
-    }
-    if( keyboard.pressed( 'S' ) ) {
-        if( shipModel.position.y > -2.5 ) shipModel.position.y -= 0.1;
-    }
-    if( keyboard.pressed( 'A' ) ) {
-        if( shipModel.position.x > -5.0 ) shipModel.position.x -= 0.1;
-        shipModel.rotation.y += 0.1;
-    }
-    if( keyboard.pressed( 'D' ) ) {
-        if( shipModel.position.x < 5.5 ) shipModel.position.x += 0.1;
-        shipModel.rotation.y -= 0.1;
-    }
-}
-
-function replay(){
-    // force this thing to be invisible
-    highScorer.style.visibility = 'hidden'
-
-    // reset game stuff
-    shipModel.position.set(0,0,-5)
-    shipModel.rotation.set(Math.PI/2,0,0)
-    obstacleMax = 10;
-    for(let i = 0; i < obstacles.length; i++){
-        obstacles[i].position.set(rand(-100,1000), rand(-20,20), rand(40, 100))
-        if(i < obstacleMax){
-            obstacles[i].visible = true;
-        } else {
-            obstacles[i].visible = false;
-        }
-    }
-    score = 0;
-    gameOver = false;
-    endGame.style.visibility = 'hidden';
-
-    velocity = 0.1;
-    acceleration = 0.0001;
-    player.health = 100;
-    clock.start();
-    gameLoop();
+    gameOver ? displayEndingScreen() : requestAnimationFrame(gameLoop);
 }
