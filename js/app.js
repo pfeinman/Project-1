@@ -1,15 +1,17 @@
+const maxHighScores = 5;
+
 // Global Variables
 let scene, camera, renderer;
+let shipModel, pointLight, stars;
+let clock, time, velocity, acceleration;
+let raycaster;
+let keyboard, gameOver;
+let score, highScores;
 
-let clock, time;
-let velocity, acceleration;
-let shipModel, raycaster;
-let keyboard, score, gameOver;
-let controls;
+let initials;
 
-let pointLight;
-
-let stars;
+// Post Processing Variables
+let renderScene, bloomPass, composer;
 
 const player = {
     health: null,
@@ -18,41 +20,81 @@ const player = {
 
 const audio = [];
 
-// mobs
-const enemies = [];
 let obstacles = [];
 let obstacleMax = 10;
 
+
+
 // cached DOM Elements
-const initScreen = document.querySelector('#initScreen');
+const welcomeScreen = document.querySelector('#welcome-screen');
 const debugTxt = document.querySelector('#debug-data');
 const endGame = document.querySelector('#endGame');
 const shields = document.querySelector('#shields');
 const shieldHUD = document.querySelector('#shieldHUD');
 const shieldBar = document.querySelector('#bar');
 const runningScore = document.querySelector('#runningScore');
+const scoreButton = document.querySelector('#submit-score');
+const initialsField = document.querySelector('#enterScore')
+const highScorer = document.querySelector('#highScorer')
 
 // Post processing
 const params = {
     exposure: 1.0,
-    bloomStrength: 0.8,
+    bloomStrength: 1.0,
     bloomThreshold: 0,
     bloodRadius: 0
-}
+};
 
-let renderScene, bloomPass, composer;
+// Event Listeners
+window.addEventListener('resize', function(){
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    composer.setSize(window.innerWidth, window.innerHeight)
+    renderer.setSize(window.innerWidth, window.innerHeight);
+}, false);
 
+endGame.addEventListener('click', function(e){
+    if(e.target.id === 'replay') replay();
+})
 
+scoreButton.addEventListener('click', () => {
+    initials = initialsField.value;
+    if (highScores.length === maxHighScores) highScores.pop();
+    highScores.push({initials, score})
+    highScores.sort((a, b) => b.score - a.score)
+    localStorage.setItem('scores', JSON.stringify(highScores));
+    highScorer.style.visibility = 'hidden';
+    initialsField.value = '';
+});
 
+displayWelcome();
 init();
 setTimeout(gameLoop, 1000);
 
+function displayWelcome(){
+    console.log('hello')
+}
+
 
 function init(){
+    welcomeScreen.visibility = 'hidden'
+
+    highScores = JSON.parse(localStorage.getItem('scores')) || [];
+    localStorage.setItem('scores', JSON.stringify(highScores));
+
 
     audio.push(new Audio('audio/things.mp3'));
-    
-    initScreen.style.visibility = 'hidden';
+    audio[0].addEventListener('canplay', function(e) {
+        audio[0].play()
+        .then(function(data) {
+            console.log(data);
+        })
+        .catch(function(err) {
+            console.log(err);
+        });
+    });
+
+    welcomeScreen.style.visibility = 'hidden';
 
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -100,7 +142,7 @@ function init(){
     floor.scale.set(20,20,50);
     scene.add(floor);
 
-    stars = new Array(30).fill(null);
+    stars = new Array(20).fill(null);
     for (let i in stars){
         let size = rand(0.1, 1.0)
         stars[i] = new THREE.Mesh(
@@ -143,8 +185,6 @@ function init(){
     renderer.toneMapping = THREE.ReinhardToneMapping;
     document.body.appendChild(renderer.domElement);
 
-    controls = new THREE.OrbitControls(camera, renderer.domElement);
-
     // post Processing
     renderScene = new THREE.RenderPass(scene, camera);
     bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.5, 0.85 );
@@ -160,7 +200,6 @@ function init(){
 }
 
 function gameLoop(){
-    audio[0].play();
     pointLight.lookAt(camera)
     shieldHUD.style.visibility = 'visible';
     time = ~~clock.getElapsedTime();
@@ -175,7 +214,6 @@ function gameLoop(){
     }
     
     keyControls();
-    controls.update();
 
     // motion 101
     velocity += acceleration
@@ -184,12 +222,10 @@ function gameLoop(){
     }
     
     // faster = more obstacles
-    if (obstacleMax >= obstacles.length-1 ) {
-        obstacleMax = obstacles.length
-    }
-     else {
-        obstacleMax = ~~(velocity*100)
-     }
+    obstacleMax > obstacles.length ?
+        obstacleMax = obstacles.length :
+        obstacleMax = ~~(velocity*100);
+
     if(obstacleMax < 50){
         for(let i = 0; i < obstacleMax; i++){
             obstacles[i].visible = true
@@ -241,20 +277,22 @@ function gameLoop(){
     gameOver ? endingScreen() : requestAnimationFrame(gameLoop);
 }
 
-// function render(){
-//     renderer.render(scene, camera);
-// }
-
 function endingScreen(){
-    audio[0].pause();
-    audio[0].currentTime = 0;
     clock.stop();
     score = time;
-    endGame.innerHTML = `<p>GGWP<BR>SCORE: ${score}<p><button id="replay">Replay?</button>`;
+    document.querySelector('#endGame > p > span').textContent = score;
+    highScorer.style.visibility = 'hidden';
+
+    // check if made high score list
+    highScorer.style.visibility = (highScores.length < maxHighScores || score > highScores[highScores.length - 1].score) ? 'visible' : 'hidden';
     endGame.style.visibility = 'visible'
     velocity = 0.01;
-    //clock.stop();
 }
+        
+    // renderHTML
+// document.querySelector('#endGame input').textContent = initials;
+    
+
 
 function keyControls() {
     if( keyboard.pressed( 'W' ) ) {
@@ -271,25 +309,15 @@ function keyControls() {
         if( shipModel.position.x < 5.5 ) shipModel.position.x += 0.1;
         shipModel.rotation.y -= 0.1;
     }
-    if ( keyboard.pressed( 'space' ) ) {
-        console.log('zap a laser')
-    }
 }
 
 // fix proportions on window resize
-window.addEventListener('resize', function(){
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    controls.update();
-    composer.setSize(window.innerWidth, window.innerHeight)
-    renderer.setSize(window.innerWidth, window.innerHeight);
-}, false);
 
-endGame.addEventListener('click', function(e){
-    if(e.target.type === 'submit') replay();
-})
 
 function replay(){
+    // reset high score input
+
+    // reset game stuff
     shipModel.position.set(0,0,-5)
     shipModel.rotation.set(Math.PI/2,0,0)
     obstacleMax = 10;

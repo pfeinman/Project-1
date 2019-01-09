@@ -9,7 +9,7 @@
     <title>Document</title>
 </head>
 <body>
-    <div id="initScreen"></div>
+    <div id="welcome-screen"></div>
     <div id="info"></div>
     <!-- <div id="debug-data"></div> -->
     
@@ -20,12 +20,18 @@
         </div>
     </section>
     <div id="runningScore"></div>
-    <div id="endGame"></div>
+    <div id="endGame">
+        <p>GGWP!<br>SCORE: <span></span></p>
+        <div id="highScorer">
+            <input placeholder='Enter your initials' type='text' id="enterScore">
+            <button id="submit-score">Submit Score</button>
+        </div>
+        <button id="replay">Replay?</button>
+    </div>
     <!-- THREE js -->
     <script src="js/library/three.js"></script>
     <script src="js/library/GLTFLoader.js"></script>
     <script src="js/library/OrbitControls.js"></script>
-    
     <script src="js/library/EffectComposer.js"></script>
     <script src="js/library/RenderPass.js"></script>
     <script src="js/library/ShaderPass.js"></script>
@@ -33,7 +39,6 @@
     <script src="js/library/GlitchPass.js"></script>
     <script src="js/library/LuminosityHighPassShader.js"></script>
     <script src="js/library/UnrealBloomPass.js"></script>
-    <!-- THREEx -->
     <script src="js/library/THREEx/THREEx.KeyboardState.js"></script>
     <!-- application logic -->
     <script src="js/utils.js"></script>
