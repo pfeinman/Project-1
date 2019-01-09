@@ -36,6 +36,7 @@ const runningScore = document.querySelector('#runningScore');
 const scoreButton = document.querySelector('#submit-score');
 const initialsField = document.querySelector('#enterScore')
 const highScorer = document.querySelector('#highScorer')
+const startBtn = document.querySelector('#start')
 
 // Post processing
 const params = {
@@ -46,6 +47,8 @@ const params = {
 };
 
 // Event Listeners
+start.addEventListener('click', init);
+
 window.addEventListener('resize', function(){
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
@@ -68,11 +71,12 @@ scoreButton.addEventListener('click', () => {
 });
 
 displayWelcome();
-init();
-setTimeout(gameLoop, 1000);
+
 
 function displayWelcome(){
     console.log('hello')
+    welcomeScreen.visibility = 'visible'
+
 }
 
 
@@ -197,6 +201,8 @@ function init(){
     composer.setSize(window.innerWidth, window.innerHeight);
     composer.addPass(renderScene);
     composer.addPass(bloomPass)
+
+    setTimeout(gameLoop, 1000);
 }
 
 function gameLoop(){
@@ -209,7 +215,7 @@ function gameLoop(){
     shieldBar.style.width = `${player.health}%`;
     camera.lookAt(scene.position)
 
-    if(player.health <= 0){
+    if ( player.health <= 0 ){
         gameOver = true;
     }
     
