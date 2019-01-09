@@ -3,7 +3,7 @@ const maxHighScores = 5;
 // Global Variables
 let scene, camera, renderer;
 let shipModel, pointLight, stars;
-let clock, time, velocity, acceleration;
+let clock, velocity, acceleration;
 let raycaster;
 let keyboard, gameOver;
 let score, highScores;
@@ -194,7 +194,7 @@ function init(){
     bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.5, 0.85 );
     bloomPass.renderToScreen = true;
     bloomPass.threshold = params.bloomThreshold;
-    bloomPass.strnegth = params.bloomStrength;
+    bloomPass.strength = params.bloomStrength;
     bloomPass.radius = params.bloomRadius;
 
     composer = new THREE.EffectComposer(renderer);
@@ -208,12 +208,11 @@ function init(){
 function gameLoop(){
     pointLight.lookAt(camera)
     shieldHUD.style.visibility = 'visible';
-    time = ~~clock.getElapsedTime();
-    score = time;
+    score = ~~clock.getElapsedTime();
 
     runningScore.innerHTML = `SCORE: ${score}`
     shieldBar.style.width = `${player.health}%`;
-    camera.lookAt(scene.position)
+    // camera.lookAt(scene.position)
 
     if ( player.health <= 0 ){
         gameOver = true;
@@ -285,7 +284,6 @@ function gameLoop(){
 
 function endingScreen(){
     clock.stop();
-    score = time;
     document.querySelector('#endGame > p > span').textContent = score;
     highScorer.style.visibility = 'hidden';
 
@@ -294,11 +292,6 @@ function endingScreen(){
     endGame.style.visibility = 'visible'
     velocity = 0.01;
 }
-        
-    // renderHTML
-// document.querySelector('#endGame input').textContent = initials;
-    
-
 
 function keyControls() {
     if( keyboard.pressed( 'W' ) ) {
@@ -317,11 +310,9 @@ function keyControls() {
     }
 }
 
-// fix proportions on window resize
-
-
 function replay(){
-    // reset high score input
+    // force this thing to be invisible
+    highScorer.style.visibility = 'hidden'
 
     // reset game stuff
     shipModel.position.set(0,0,-5)
