@@ -43,7 +43,7 @@ const params = {
     exposure: 1.0,
     bloomStrength: 1.0,
     bloomThreshold: 0,
-    bloodRadius: 0
+    bloomRadius: 0
 };
 
 // Event Listeners
