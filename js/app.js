@@ -16,9 +16,7 @@ const player = {
     model: null,
 }
 
-const audio = [
-    new Audio('audio/things.mp3')
-];
+const audio = [];
 
 // mobs
 const enemies = [];
@@ -47,13 +45,15 @@ let renderScene, bloomPass, composer;
 
 
 init();
-setTimeout(gameLoop, 100);
+setTimeout(gameLoop, 1000);
 
 
 function init(){
 
-    initScreen.style.visibility = 'hidden';
+    audio.push(new Audio('audio/things.mp3'));
     
+    initScreen.style.visibility = 'hidden';
+
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
