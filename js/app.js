@@ -10,9 +10,11 @@ let score, highScores, initials;
 const maxHighScores = 5;
 
 // Particles and Obstacles
-let particles;
+const obstacleHardCap = 100;
+let particles, stars;
 let obstacleMax = 10;
 const obstacles = [];
+let nearDist, farDist;
 
 
 const player = {
@@ -88,6 +90,8 @@ function init(){
     localStorage.setItem('scores', JSON.stringify(highScores));
 
     updateScoresOverlay();
+    nearDist = -20;
+    farDist = -50;
     
 
     audio.push(new Audio('audio/things.mp3'));
@@ -153,9 +157,20 @@ function init(){
         scene.add(particles[i]);
     }
 
+    stars = new Array(30).fill(null);
+    for(let i in stars){
+        let size = rand(0.1, 1.0);
+        stars[i] = new THREE.Mesh(
+            new THREE.BoxGeometry(size, size, size),
+            new THREE.MeshNormalMaterial({wireframe: true})
+        );
+        stars[i].position.set(rand(-50, 50), rand(-50, 50), rand(-10,-50));
+        scene.add(stars[i])
+    }
+
     // obstacles
     obstacleMax = 10;
-    for(let i = 0; i < 50; i++){
+    for(let i = 0; i < obstacleHardCap; i++){
         let obstacle = new THREE.Mesh(
             new THREE.BoxGeometry(rand(1,5),rand(1,5),rand(4,5)),
             new THREE.MeshLambertMaterial({color: randomColor(), transparent: true, opacity: 0.75})
@@ -195,7 +210,7 @@ function init(){
     composer = new THREE.EffectComposer(renderer);
     composer.setSize(window.innerWidth, window.innerHeight);
     composer.addPass(renderScene);
-    composer.addPass(bloomPass)
+    composer.addPass(bloomPass);
 
     // time delayed call to gameLoop
     setTimeout(gameLoop, 1000);
@@ -206,7 +221,8 @@ function gameLoop(){
     score = ~~clock.getElapsedTime();
 
     runningScore.innerHTML = `SCORE: ${score}`
-    shieldBar.style.width = `${player.health}%`;
+    updateShields();
+    //shieldBar.style.width = `${player.health}%`;
 
     if ( player.health <= 0 ){
         gameOver = true;
@@ -225,7 +241,7 @@ function gameLoop(){
         obstacleMax = obstacles.length :
         obstacleMax = ~~(velocity*100);
 
-    if(obstacleMax < 50){
+    if(obstacleMax < obstacleHardCap){
         for(let i = 0; i < obstacleMax; i++){
             obstacles[i].visible = true
          }
@@ -254,10 +270,10 @@ function gameLoop(){
     // motion logic for obstacles
     for (let i of obstacles){
         i.position.z += velocity;
-        if (i.position.z > 1.0){
+        if (i.position.z > 1.0) {
             i.position.x = rand(-20, 20)
             i.position.y = rand(-5, 20)
-            i.position.z = rand(-30, -50);
+            i.position.z = rand(nearDist, farDist);   
         }
     }
     // motion for particles
@@ -271,6 +287,16 @@ function gameLoop(){
         if(particle.position.z > 1){
             particle.position.set(rand(-20,20), rand(-10, 10), rand(-20,-100));
         }
+    }
+    // motion logic for stars
+    for(let star of stars){
+        star.position.z += velocity/100;
+        star.rotation.x += 0.01;
+        star.rotation.y += 0.01;
+        if(star.position.z > 1){
+            star.position.set(rand(-100, 100), rand(-5, 5), rand(-10,-50));
+        }
+
     }
     renderer.clear();
     composer.render();

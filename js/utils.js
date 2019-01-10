@@ -89,3 +89,9 @@ const replay = () =>{
     clock.start();
     gameLoop();
 }
+
+const updateShields = () => {
+    shieldHUD.style.visibility = 'visible';
+    shieldBar.style.backgroundColor = player.health < 25 ? 'red' : 'blue'
+    shieldBar.style.width = `${player.health}%`;
+};
