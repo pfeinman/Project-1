@@ -7,7 +7,7 @@ let gameOver;
 let score, highScores, initials;
 const maxHighScores = 5;
 
-// Particles
+// Particles and Obstacles
 let stars;
 let obstacleMax = 10;
 const obstacles = [];
@@ -66,8 +66,9 @@ scoreButton.addEventListener('click', () => {
     initialsField.value = '';
 });
 
-// do it
+/* ----do it---- */
 displayWelcome();
+/* ------------ */
 
 function init(){
     welcomeScreen.visibility = 'hidden'
@@ -122,7 +123,6 @@ function init(){
 
     // input
     keyboard = new THREEx.KeyboardState();
-
 
     // environment
     stars = new Array(20).fill(null);
@@ -191,7 +191,6 @@ function gameLoop(){
 
     runningScore.innerHTML = `SCORE: ${score}`
     shieldBar.style.width = `${player.health}%`;
-    // camera.lookAt(scene.position)
 
     if ( player.health <= 0 ){
         gameOver = true;
