@@ -1,3 +1,5 @@
+// localStorage.clear();
+
 /* Global Variables */
 let scene, camera, renderer;
 let shipModel, pointLight;
@@ -28,19 +30,25 @@ const params = {
     bloomRadius: 0
 };
 
-// cached DOM Elements
+/* ------------------ cached DOM Elements ------------------ */
 const welcomeScreen = document.querySelector('#welcome-screen');
 const startBtn = document.querySelector('#start');
 
+/* HUD */
 const shields = document.querySelector('#shields');
 const shieldHUD = document.querySelector('#shieldHUD');
 const shieldBar = document.querySelector('#bar');
+
 const runningScore = document.querySelector('#runningScore');
+const highScoreHUD = document.querySelector('#scores-overlay');
+const scoresOverlay = document.querySelector('#scores-overlay > ol');
 
 const scoreButton = document.querySelector('#submit-score');
 const endGame = document.querySelector('#endGame');
 const initialsField = document.querySelector('#enterScore')
 const highScorer = document.querySelector('#highScorer')
+
+const scoreElements = [];
 
 // Event Listeners
 start.addEventListener('click', init);
@@ -64,6 +72,9 @@ scoreButton.addEventListener('click', () => {
     localStorage.setItem('scores', JSON.stringify(highScores));
     highScorer.style.visibility = 'hidden';
     initialsField.value = '';
+    
+    updateScoresOverlay();
+    
 });
 
 /* ----do it---- */
@@ -71,11 +82,12 @@ displayWelcome();
 /* ------------ */
 
 function init(){
-    welcomeScreen.visibility = 'hidden'
 
     highScores = JSON.parse(localStorage.getItem('scores')) || [];
     localStorage.setItem('scores', JSON.stringify(highScores));
 
+    updateScoresOverlay();
+    
 
     audio.push(new Audio('audio/things.mp3'));
     audio[0].addEventListener('canplay', function(e) {
@@ -89,6 +101,10 @@ function init(){
     });
 
     welcomeScreen.style.visibility = 'hidden';
+
+    highScoreHUD.style.visibility = 'visible';
+    shieldHUD.style.visibility = 'visible';
+
 
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -186,7 +202,6 @@ function init(){
 
 function gameLoop(){
     pointLight.lookAt(camera)
-    shieldHUD.style.visibility = 'visible';
     score = ~~clock.getElapsedTime();
 
     runningScore.innerHTML = `SCORE: ${score}`

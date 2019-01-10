@@ -10,16 +10,17 @@
 </head>
 <body>
     <div id="welcome-screen">
-        <h1>HELLO</h1>
-        <div>
-            <h3>Background Music?</h3>
-            <input type="radio" id="audioYes">
-            <input type="radio" id="audioNo">
+        <div id="splash-wrapper">
+            <h1>HELLO</h1>
+            <div>
+                <h3>Background Music?</h3>
+                <input type="radio" id="audioYes">
+                <input type="radio" id="audioNo">                </div>
+            <label for="audioYes">yes</label>
+            <label for="audioNo">no</label>
+            <br>
+            <button id="start">START ME</button>
         </div>
-        <label for="audioYes">yes</label>
-        <label for="audioNo">no</label>
-        <br>
-        <button id="start">START ME</button>
     </div>
     <div id="info"></div> 
     <section id='shieldHUD'>
@@ -29,10 +30,21 @@
         </div>
     </section>
     <div id="runningScore"></div>
+    <div id="scores-overlay" style="visibility: hidden">
+        <h3>HIGH SCORES</h3>
+        <ol id="scoreList">
+            <li id="score-0"></li>
+            <li id="score-1"></li>
+            <li id="score-2"></li>
+            <li id="score-3"></li>
+            <li id="score-4"></li>
+
+        </ol>
+    </div>
     <div id="endGame">
         <p>GGWP!<br>SCORE: <span></span></p>
         <div id="highScorer">
-            <input placeholder='Enter your initials' type='text' id="enterScore">
+            <input placeholder='ENTER YOUR INITIALS' type='text' id="enterScore" maxlength="3">
             <button id="submit-score">Submit Score</button>
         </div>
         <button id="replay">Replay?</button>

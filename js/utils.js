@@ -14,6 +14,18 @@ const randomColor = () => {
     return hexVal.join('')
 };
 
+// dom Functions
+const updateScoresOverlay = () => {
+    for(let i = 0; i < maxHighScores; i++){
+        if(highScores[i]){
+            scoreElements[i] = highScores[i];
+        }
+    }
+    scoresOverlay.textContent = '';
+    scoreElements.forEach(s => {
+        scoresOverlay.innerHTML += `<li>${s.score} ${s.initials.toUpperCase()}</li>`
+    })
+}
 // keyboard controls
 const keyControls = () => {
     if( keyboard.pressed( 'W' ) ) {
@@ -35,10 +47,11 @@ const keyControls = () => {
 // splash screen
 const displayWelcome = () => {
     welcomeScreen.visibility = true;
+    highScoreHUD.style.visibility = 'hidden';
 }
 
 const displayEndingScreen = () => {
-    clock.stop();
+    if(clock.running) clock.stop();
     document.querySelector('#endGame > p > span').textContent = score;
     highScorer.style.visibility = 'hidden';
 

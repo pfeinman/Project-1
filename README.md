@@ -4,11 +4,11 @@
 - JavaScript, HTML, CSS
 - Blender, Photoshop
 - THREE.js by MrDoob (version 100)
-    - 3D Library // WebGL for noobs such as myself
+    - WebGL Library
 - GLTF Exporter 2.0 by Khronos Group
     - Used to export ship model with embedded textures
 - Node HTTP-Server for development
-  - Necessary to circumvent Chrome's cross-origin policy when importing 3D Models
+  - Necessary to circumvent Chrome's cross-origin policy when importing 3D Models.
 
 # Art Pipeline
 1. Export UV Layout for Starship
@@ -53,14 +53,8 @@ composer.render();
 All geometries (aside from ship) are generated procedurally during initialization (no models)
 ```javascript
 /* 10 particles */
-const particles = new Array( 10 ).fill( null )
-for ( let particle of particles ) {
-    particle = new THREE.Mesh(
-        new THREE.BoxGeometry(...),
-        new THREE.MeshLambertMaterial(...)
-    )
-    scene.add(particle)
-}
+mesh = new THREE.Mesh(geometry, material);
+scene.add(mesh);
 ```
 The illusion of motion is implemented by incrementing z-positions by velocity, which increases with acceleration.
 
@@ -75,18 +69,14 @@ for( let particle of particles ) {
     particle.position.z += velocity
 }
 ```
-
-Meshes are 'recycled' when they move behind the camera by giving them a random position closer to the far clipping plane.
-```javascript
-if (particle.position.z > 1 ) {
-    particle.position.set( randomPositionFarFromCamera )
-}
-```
+Meshes are 'recycled' when they move behind the camera by giving them a random position closer to the far clip.
 This gives the illusion of a continous stream of objects!
 
 
 
 ## Known Bugs / Unsolved Issues
+
+# Collision Detection
 - Due to 6 faulty collisions detected during initialization, player starts with 94% HP...
 
 - Current collision detection logic means that the faster you move, the less damage you take...
