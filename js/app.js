@@ -1,4 +1,4 @@
-// localStorage.clear();
+localStorage.clear();
 
 /* Global Variables */
 let scene, camera, renderer;
@@ -73,6 +73,9 @@ endGame.addEventListener('click', function(e){
 scoreButton.addEventListener('click', () => {
     initials = initialsField.value;
     if (highScores.length === maxHighScores) highScores.pop();
+        if(!initials){
+            initials = '---';
+        }
     highScores.push({initials, score})
     highScores.sort((a, b) => b.score - a.score)
     localStorage.setItem('scores', JSON.stringify(highScores));
