@@ -44,9 +44,22 @@ const keyControls = () => {
     }
 }
 
+const rotator = () => {
+    for(let obj of obstacles){
+        rot = rand(0.01, 0.05) * Math.abs(Math.sin(velocity));
+        obj.rotation.z += rot
+    }
+}
+
+const resetRotation = () => {
+    for(let obj of obstacles){
+        obj.rotation.z = 0;
+    }
+};
+
 // splash screen
 const displayWelcome = () => {
-    welcomeScreen.visibility = true;
+    welcomeScreen.style.visibility = 'visible';
     highScoreHUD.style.visibility = 'hidden';
 }
 
@@ -66,6 +79,7 @@ const displayEndingScreen = () => {
 const replay = () =>{
     // ensure highScore input is hidden
     highScorer.style.visibility = 'hidden'
+    resetRotation();
 
     // reset game stuff
     shipModel.position.set(0,0,-5)
@@ -112,8 +126,4 @@ const songDisplay = () => {
 const audioPlayer = () => {
     audio[0].play();
     audio[0].loop = true;
-}
-
-const animator = () => {
-    
 }

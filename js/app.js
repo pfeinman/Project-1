@@ -59,13 +59,6 @@ const scoreElements = [];
 // Event Listeners
 start.addEventListener('click', init);
 
-window.addEventListener('resize', function(){
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    composer.setSize(window.innerWidth, window.innerHeight)
-    renderer.setSize(window.innerWidth, window.innerHeight);
-}, false);
-
 endGame.addEventListener('click', function(e){
     if(e.target.id === 'replay') replay();
 })
@@ -224,6 +217,14 @@ function init(){
     composer.addPass(renderScene);
     composer.addPass(bloomPass);
 
+    window.addEventListener('resize', function(){
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        composer.setSize(window.innerWidth, window.innerHeight)
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }, false);
+    
+
     // time delayed call to gameLoop
     setTimeout(gameLoop, 1000);
 }
@@ -234,6 +235,7 @@ function gameLoop(){
 
     runningScore.innerHTML = `SCORE: ${score}`
 
+    if(score >= 60) rotator();
     updateShields();
 
     songDisplay();
