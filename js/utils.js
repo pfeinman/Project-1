@@ -26,6 +26,19 @@ const updateScoresOverlay = () => {
         scoresOverlay.innerHTML += `<li>${s.score} ${s.initials.toUpperCase()}</li>`
     })
 }
+
+const randomFromArray = (array) => array[~~(Math.random()*array.length)]
+
+const randomTitle = () => {
+    const prefixes = ['HYPER', 'MEGA', 'SUPER'];
+    const suffixes = ['SPACE', 'LIGHT', 'TIME'];
+    const nouns = ['CUBE', 'BOX', 'POLYGON', 'GEOMETRY'];
+    const endNouns = ['DRIFTER', 'GLIDER', 'COLLIDER', 'DODGER', 'RUNNER', 'FLYER'];
+    const phrase = `${randomFromArray(prefixes)}${randomFromArray(suffixes)} ${randomFromArray(nouns)} ${randomFromArray(endNouns)}`;
+    gameTitle.textContent = phrase;
+}
+
+
 // keyboard controls
 const keyControls = () => {
     if( keyboard.pressed( 'W' ) ) {
@@ -44,6 +57,27 @@ const keyControls = () => {
     }
 }
 
+const checkCollisions = () => {
+    const originPoint = shipModel.position.clone();
+    player.hitbox.position.set(originPoint.x, originPoint.y, originPoint.z);
+
+    const rot = shipModel.rotation.clone();
+    player.hitbox.rotation.set(rot.x, rot.y, rot.z);
+    
+    for(let vertexIndex = 0; vertexIndex < player.hitbox.geometry.vertices.length; vertexIndex++){
+        const localVertex = player.hitbox.geometry.vertices[vertexIndex].clone();
+        const globalVertex = localVertex.applyMatrix4( player.hitbox.matrix );
+        const dirVector = globalVertex.sub(player.hitbox.position);
+        
+        const ray = new THREE.Raycaster(originPoint, dirVector.clone().normalize())
+        const collisions = ray.intersectObjects(obstacles);
+        if(collisions.length > 0 && collisions[0].distance < dirVector.length()){
+            player.health -= 1;
+            // hit !
+        }
+    }
+}
+
 const rotator = () => {
     for(let obj of obstacles){
         rot = rand(0.01, 0.05) * Math.abs(Math.sin(velocity));
@@ -59,6 +93,7 @@ const resetRotation = () => {
 
 // splash screen
 const displayWelcome = () => {
+    randomTitle();
     welcomeScreen.style.visibility = 'visible';
     highScoreHUD.style.visibility = 'hidden';
 }

@@ -9,6 +9,8 @@ let gameOver;
 let score, highScores, initials;
 const maxHighScores = 5;
 
+let controls;
+
 // Particles and Obstacles
 const obstacleHardCap = 100;
 let particles, stars;
@@ -35,6 +37,7 @@ const params = {
 };
 
 /* ------------------ cached DOM Elements ------------------ */
+const gameTitle = document.querySelector('#title')
 const welcomeScreen = document.querySelector('#welcome-screen');
 const startBtn = document.querySelector('#start');
 
@@ -43,7 +46,7 @@ const shields = document.querySelector('#shields');
 const shieldHUD = document.querySelector('#shieldHUD');
 const shieldBar = document.querySelector('#bar');
 
-const runningScore = document.querySelector('#runningScore');
+const runningScore = document.querySelector('#running-score');
 const highScoreHUD = document.querySelector('#scores-overlay');
 const scoresOverlay = document.querySelector('#scores-overlay > ol');
 
@@ -265,24 +268,9 @@ function gameLoop(){
     }
 
     /* Collision Detection */
-    const originPoint = shipModel.position.clone();
-    player.hitbox.position.set(originPoint.x, originPoint.y, originPoint.z);
+    
 
-    const rot = shipModel.rotation.clone();
-    player.hitbox.rotation.set(rot.x, rot.y, rot.z);
-
-    for(let vertexIndex = 0; vertexIndex < player.hitbox.geometry.vertices.length; vertexIndex++){
-        const localVertex = player.hitbox.geometry.vertices[vertexIndex].clone();
-        const globalVertex = localVertex.applyMatrix4( player.hitbox.matrix );
-        const dirVector = globalVertex.sub(player.hitbox.position);
-        
-        const ray = new THREE.Raycaster(originPoint, dirVector.clone().normalize())
-        const collisions = ray.intersectObjects(obstacles);
-        if(collisions.length > 0 && collisions[0].distance < dirVector.length()){
-            player.health -= 1;
-            // hit !
-        }
-    }
+    checkCollisions();
     
     // motion logic for obstacles
     for (let i of obstacles){
@@ -318,5 +306,6 @@ function gameLoop(){
     }
     renderer.clear();
     composer.render();
+    camera.updateProjectionMatrix();
     gameOver ? displayEndingScreen() : requestAnimationFrame(gameLoop);
 }

@@ -52,13 +52,14 @@ canvas {
     /* transform: translate(-50%, -50%) */
 }
 
-#runningScore {
+#running-score {
     position: absolute;
     color: white;
     bottom: 0;
     right: 0;
     font-family: 'Press Start 2P', cursive;
     margin: 3rem;
+    white-space: nowrap;
 }
 
 #hud {
@@ -145,4 +146,15 @@ canvas {
     background-color: blue;
     width: 100%;
     height: 100%
+}
+
+#danger{
+    position:fixed;
+    width: 100%;
+    height: 100%;
+    visibility: hidden;
+    position: fixed;
+    border-radius: 50%;
+    box-shadow: 0 0 5rem 5rem black inset;
+    background: rgba(255,0,0,0.5)
 }
