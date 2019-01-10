@@ -26,6 +26,10 @@ canvas {
     color: white;
 }
 
+#warning {
+    color: red;
+}
+
 .linear-title {
     color: black;
     background: linear-gradient(to right, red 20%,  orange 30%, yellow 40%, green 50%, cyan 60%, blue 70%, violet 80%);
@@ -106,7 +110,7 @@ canvas {
     top: 0;
     right: 0;
     /* width: 10%; */
-    margin: 3rem;
+    margin: 0.5rem;
     color: white;
     white-space: nowrap
 }
@@ -132,6 +136,7 @@ canvas {
     font-size: .6rem;
     text-align: center;
     left: 0%;
+    top: 0%;
     margin: 1rem;
     white-space: nowrap;
 }

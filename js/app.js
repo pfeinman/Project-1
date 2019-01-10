@@ -235,10 +235,9 @@ function gameLoop(){
 
     runningScore.innerHTML = `SCORE: ${score}`
 
+    songDisplay();
     if(score >= 60) rotator();
     updateShields();
-
-    songDisplay();
 
     //shieldBar.style.width = `${player.health}%`;
 

@@ -120,6 +120,7 @@ const audioLoader = () => {
 }
 
 const songDisplay = () => {
+    currentSong.style.visibility = 'visible'
     currentSong.textContent = `Music: "${audio[0].trackName}" by ${audio[0].artist}`;
 }
 
