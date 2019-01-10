@@ -10,9 +10,10 @@ let score, highScores, initials;
 const maxHighScores = 5;
 
 // Particles and Obstacles
-let stars;
+let particles;
 let obstacleMax = 10;
 const obstacles = [];
+
 
 const player = {
     health: null,
@@ -141,15 +142,15 @@ function init(){
     keyboard = new THREEx.KeyboardState();
 
     // environment
-    stars = new Array(20).fill(null);
-    for (let i in stars){
+    particles = new Array(20).fill(null);
+    for (let i in particles){
         let size = rand(0.1, 1.0)
-        stars[i] = new THREE.Mesh(
+        particles[i] = new THREE.Mesh(
             new THREE.BoxGeometry(size, size, size),
             new THREE.MeshNormalMaterial()
         )
-        stars[i].position.set(rand(-20,20), rand(-20, 20), rand(-1,-100));
-        scene.add(stars[i]);
+        particles[i].position.set(rand(-20,20), rand(-20, 20), rand(-1,-100));
+        scene.add(particles[i]);
     }
 
     // obstacles
@@ -259,16 +260,16 @@ function gameLoop(){
             i.position.z = rand(-30, -50);
         }
     }
-    // motion for stars
-    for(let star of stars){
-        if(star.position.x == 0 && star.position.y == 0){
-            // no dead-center stars
-            star.position.set(rand(-20,20), rand(-10, 10), rand(-20,-100));
+    // motion for particles
+    for(let particle of particles){
+        if(particle.position.x == 0 && particle.position.y == 0){
+            // no dead-center particles
+            particle.position.set(rand(-20,20), rand(-10, 10), rand(-20,-100));
         }
-        star.position.z += velocity * 4;
+        particle.position.z += velocity * 4;
         // z boundary
-        if(star.position.z > 1){
-            star.position.set(rand(-20,20), rand(-10, 10), rand(-20,-100));
+        if(particle.position.z > 1){
+            particle.position.set(rand(-20,20), rand(-10, 10), rand(-20,-100));
         }
     }
     renderer.clear();
