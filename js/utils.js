@@ -95,3 +95,7 @@ const updateShields = () => {
     shieldBar.style.backgroundColor = player.health < 25 ? 'red' : 'blue'
     shieldBar.style.width = `${player.health}%`;
 };
+
+const songDisplay = () => {
+    currentSong.textContent = `Now playing: "${audio[0].trackName}" by ${audio[0].artist}`;
+}

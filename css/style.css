@@ -108,6 +108,12 @@ canvas {
     transform: translate(-50%, -50%);
 }
 
+#current-song {
+    position: fixed;
+    color: white;
+    font-size: .6rem;
+    text-align: center;
+}
 
 #bar {
     background-color: blue;

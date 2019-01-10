@@ -51,6 +51,8 @@ const endGame = document.querySelector('#endGame');
 const initialsField = document.querySelector('#enterScore')
 const highScorer = document.querySelector('#highScorer')
 
+const currentSong = document.querySelector('#current-song');
+
 const scoreElements = [];
 
 // Event Listeners
@@ -95,15 +97,18 @@ function init(){
     
 
     audio.push(new Audio('audio/things.mp3'));
-    audio[0].addEventListener('canplay', function(e) {
-        audio[0].play()
-        .then(function(data) {
-            console.log(data);
-        })
-        .catch(function(err) {
-            console.log(err);
-        });
-    });
+    // audio[0].addEventListener('canplay', function(e) {
+    //     audio[0].play()
+    //     .then(function(data) {
+    //         console.log(data);
+    //     })
+    //     .catch(function(err) {
+    //         console.log(err);
+    //     });
+    // });
+    audio[0].play();
+    audio[0].artist = 'Louis Cole';
+    audio[0].trackName = 'Things'
 
     welcomeScreen.style.visibility = 'hidden';
 
@@ -222,6 +227,7 @@ function gameLoop(){
 
     runningScore.innerHTML = `SCORE: ${score}`
     updateShields();
+    songDisplay();
     //shieldBar.style.width = `${player.health}%`;
 
     if ( player.health <= 0 ){
