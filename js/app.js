@@ -23,6 +23,7 @@ const player = {
 }
 
 const audio = [];
+let song = '';
 
 // Post Processing
 let renderScene, bloomPass, composer;
@@ -96,7 +97,8 @@ function init(){
     farDist = -50;
     
 
-    audio.push(new Audio('audio/things.mp3'));
+    audioLoader();
+    //audio.push(new Audio('audio/things.mp3'));
     // audio[0].addEventListener('canplay', function(e) {
     //     audio[0].play()
     //     .then(function(data) {
@@ -106,9 +108,10 @@ function init(){
     //         console.log(err);
     //     });
     // });
-    audio[0].play();
-    audio[0].artist = 'Louis Cole';
-    audio[0].trackName = 'Things'
+    // audio[0].play();
+    // audio[0].artist = 'Louis Cole';
+    // audio[0].trackName = 'Things'
+    audioPlayer();
 
     welcomeScreen.style.visibility = 'hidden';
 
@@ -169,7 +172,8 @@ function init(){
             new THREE.BoxGeometry(size, size, size),
             new THREE.MeshNormalMaterial({wireframe: true})
         );
-        stars[i].position.set(rand(-50, 50), rand(-50, 50), rand(-10,-50));
+        //stars[i].position.set(rand(-50, 50), rand(-50, 50), rand(-10,-50));
+        stars[i].position.set(rand(-20, 20), rand(-20, 20), rand(-10,-30));
         scene.add(stars[i])
     }
 
@@ -226,8 +230,11 @@ function gameLoop(){
     score = ~~clock.getElapsedTime();
 
     runningScore.innerHTML = `SCORE: ${score}`
+
     updateShields();
+
     songDisplay();
+
     //shieldBar.style.width = `${player.health}%`;
 
     if ( player.health <= 0 ){
@@ -300,7 +307,8 @@ function gameLoop(){
         star.rotation.x += 0.01;
         star.rotation.y += 0.01;
         if(star.position.z > 1){
-            star.position.set(rand(-100, 100), rand(-5, 5), rand(-10,-50));
+            star.position.set(rand(-20, 20), rand(-20, 20), rand(-10,-30));
+            //star.position.set(rand(-20, 20), rand(-5, 5), rand(-10,-50));
         }
 
     }

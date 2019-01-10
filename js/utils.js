@@ -96,6 +96,24 @@ const updateShields = () => {
     shieldBar.style.width = `${player.health}%`;
 };
 
+const audioLoader = () => {
+    audio.push(
+        new Audio('audio/dynamite.mp3')
+    )
+
+    audio[0].artist = 'Todd Terje';
+    audio[0].trackName = 'Delorean Dynamite'
+}
+
 const songDisplay = () => {
-    currentSong.textContent = `Now playing: "${audio[0].trackName}" by ${audio[0].artist}`;
+    currentSong.textContent = `Music: "${audio[0].trackName}" by ${audio[0].artist}`;
+}
+
+const audioPlayer = () => {
+    audio[0].play();
+    audio[0].loop = true;
+}
+
+const animator = () => {
+    
 }
