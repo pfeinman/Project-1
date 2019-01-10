@@ -262,7 +262,8 @@ function gameLoop(){
     // motion for stars
     for(let star of stars){
         if(star.position.x == 0 && star.position.y == 0){
-            console.log('heres one');
+            // no dead-center stars
+            star.position.set(rand(-20,20), rand(-10, 10), rand(-20,-100));
         }
         star.position.z += velocity * 4;
         // z boundary

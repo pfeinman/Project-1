@@ -1,4 +1,4 @@
-# Hyperspace Cube Dodger
+<!-- # Hyperspace Cube Dodger -->
 
 ## Technologies Used
 - JavaScript, HTML, CSS
@@ -83,4 +83,5 @@ This gives the illusion of a continous stream of objects!
 
 ## Icebox / Future Plans
 - Implement lasers... pew pew.
+- Animate start and end splashes.
 - Custom GLSL shader for ship's booster/engine.
