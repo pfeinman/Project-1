@@ -83,5 +83,6 @@ This gives the illusion of a continous stream of objects!
 
 ## Icebox / Future Plans
 - Implement lasers... pew pew.
+- Add particles on collision
 - Animate start and end splashes.
 - Custom GLSL shader for ship's booster/engine.
