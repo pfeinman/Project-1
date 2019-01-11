@@ -67,20 +67,10 @@ h5 {
     flex-direction: column;
 }
 
-#splash-wrapper {
-    /* position: fixed;
-    top: 50%;
-    right: 50%;
-    transform: translate(-50%, -50%) */
-}
-
 #splash-graphic {
-    /* box-sizing: border-box; */
     margin-bottom: 1%;
     width: 20rem;
     height: 20rem;
-    /* background: red; */
-    /* position: fixed; */
 }
 
 #running-score {

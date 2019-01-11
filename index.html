@@ -9,7 +9,7 @@
     <title>Document</title>
 </head>
 <body>
-    <div id="welcome-screen">
+    <section id="welcome-screen">
         <canvas id="splash-graphic" width="20rem" height="20rem"></canvas>
         <div id="splash-wrapper">
             <h1 id="title" class="linear-title">HYPERSPACE CUBE GLIDER</h1>
@@ -20,29 +20,28 @@
             <button id="start">LET'S GO!</button>
             </section>
         </div>
-    </div>
-    <div id="info"></div> 
+    </section>
     <section id='shieldHUD'>
         <h3>SHIELD</h3>
         <div id="shields">
                 <div id="bar"></div>
         </div>
     </section>
-    <div id="running-score"></div>
-    <div id="scores-overlay" style="visibility: hidden">
+    <section id="running-score"></section>
+    <section id="scores-overlay" style="visibility: hidden">
         <h3>HIGH SCORES</h3>
         <ol id="scoreList">
         </ol>
-    </div>
-    <div id="data-song"></div>
-    <div id="endGame">
+    </section>
+    <section id="data-song"></section>
+    <section id="endGame">
         <p>GGWP!<br>SCORE: <span></span></p>
         <div id="highScorer">
             <input placeholder='ENTER YOUR INITIALS' type='text' id="enterScore" maxlength="3">
             <button id="submit-score">Submit Score</button>
         </div>
         <button id="replay">REPLAY</button>
-    </div>
+    </section>
     <!-- THREE js -->
     <script src="js/library/three.min.js"></script>
     <script src="js/library/GLTFLoader.js"></script>
