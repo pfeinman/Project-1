@@ -2,12 +2,14 @@
 
 /* -----------Global Constants----------- */
 const maxHighScores = 5, obstacleHardCap = 100, starMax = 50;
-const obstacles = [], stars = [], audio = [];
+const obstacles = [], stars = [] // audio = [];
 
 const player = {
     health: null,
     model: null,
 }
+
+const audio = {};
 
 /* -----------Global Variables----------- */
 let scene, camera, renderer;
@@ -72,7 +74,7 @@ scoreButton.addEventListener('click', () => {
 });
 
 /* ----do it---- */
-displayWelcome();
+splash();
 /* ------------ */
 
 function init(){
@@ -81,11 +83,8 @@ function init(){
     localStorage.setItem('scores', JSON.stringify(highScores));
 
     updateScoresOverlay();
-    nearDist = -40;
-    farDist = -60;
-    
-    audioLoader();
-    audioPlayer();
+    nearDist = -20;
+    farDist = -40;
 
     welcomeScreen.style.visibility = 'hidden';
 
@@ -207,7 +206,9 @@ function init(){
         renderer.setSize(window.innerWidth, window.innerHeight);
     }, false);
 
-    // time delayed call to gameLoop
+    playAudio();
+
+    // call gameLoop in a second
     setTimeout(gameLoop, 1000);
 }
 
@@ -221,8 +222,6 @@ function gameLoop(){
     songDisplay();
     updateShields();
 
-    //shieldBar.style.width = `${player.health}%`;
-
     if ( player.health <= 0 ){
         gameOver = true;
     }
@@ -231,12 +230,12 @@ function gameLoop(){
     // motion 101
     velocity += acceleration
     if(velocity > 10){
-        velocity *= 0;
+        velocity = 10;
     }
 
     // difficulty scaling
     if(score >= 60) rotator();
-    if(score >= 10) nearReduce();
+    if(score >= 90) nearReduce();
     
     // faster = more obstacles
     obstacleMax > obstacles.length ?

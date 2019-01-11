@@ -48,7 +48,7 @@ const recolor = () => {
     })
 }
 
-const remesher = () => {
+const remesher = (interval) => {
     for(let obstacle of obstacles){
         obstacle.material = new THREE.MeshNormalMaterial({wireframe: true})
     }
@@ -57,7 +57,7 @@ const remesher = () => {
             obstacle.material = new THREE.MeshLambertMaterial({color: randomColor(), transparent: true, opacity: 0.75})
         }
         player.invulnerability = false;
-    }, 5000)
+    }, interval)
 }
 
 const keyControls = () => {
@@ -76,7 +76,7 @@ const keyControls = () => {
         player.model.rotation.y -= 0.1;
     }
     if( keyboard.pressed( 'space' ) ) {
-        remesher();
+        remesher(2000);
     }
 }
 
@@ -122,10 +122,11 @@ const resetDistances = () => {
 };
 
 // splash screen
-const displayWelcome = () => {
+const splash = () => {
     randomTitle();
     welcomeScreen.style.visibility = 'visible';
     highScoreHUD.style.visibility = 'hidden';
+    audioLoader();
 };
 
 const displayEndingScreen = () => {
@@ -183,22 +184,19 @@ const updateShields = () => {
 };
 
 const audioLoader = () => {
-    audio.push(
-        new Audio('audio/dynamite.mp3')
-    )
-
-    audio[0].artist = 'Todd Terje';
-    audio[0].trackName = 'Delorean Dynamite'
+    audio.mp3 = new Audio('audio/dynamite.mp3');
+    audio.artist = 'Todd Terje'
+    audio.title = 'Delorean Dynamite'
 }
 
 const songDisplay = () => {
     songInfo.style.visibility = 'visible'
-    songInfo.textContent = `Music: "${audio[0].trackName}" by ${audio[0].artist}`;
+    songInfo.textContent = `Music: "${audio.title}" by ${audio.artist}`;
 }
 
-const audioPlayer = () => {
-    audio[0].play();
-    audio[0].loop = true;
+const playAudio = () => {
+    audio.mp3.play();
+    audio.mp3.loop = true;
 }
 
 const bloomTweak = () => {
