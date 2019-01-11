@@ -33,7 +33,6 @@ canvas {
 .linear-title {
     color: black;
     background: linear-gradient(to right, red 20%,  orange 30%, yellow 40%, green 50%, cyan 60%, blue 70%, violet 80%);
-    /* background: linear-gradient(to right, #FFF 20%, red 40%, #FF0 60%, #FFF 80%); */
     background-size: 200% auto;
     background-clip: text;
     -webkit-background-clip: text;
@@ -110,7 +109,6 @@ canvas {
     box-sizing: border-box;
     top: 0;
     right: 0;
-    /* width: 10%; */
     margin: 0.5rem;
     color: white;
     white-space: nowrap
@@ -131,7 +129,7 @@ canvas {
     transform: translate(-50%, -50%);
 }
 
-#current-song {
+#data-song {
     position: fixed;
     color: white;
     font-size: .6rem;

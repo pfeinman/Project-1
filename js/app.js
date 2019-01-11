@@ -1,31 +1,21 @@
-localStorage.clear();
+// localStorage.clear();
 
-/* Global Variables */
-let scene, camera, renderer;
-let shipModel, pointLight;
-let clock, velocity, acceleration;
-let raycaster, keyboard;
-let gameOver;
-let score, highScores, initials;
-const maxHighScores = 5;
-
-let controls;
-
-// Particles and Obstacles
-const obstacleHardCap = 100;
-let particles, stars;
-let obstacleMax = 10;
-const obstacles = [];
-let nearDist, farDist;
-
+/* -----------Global Constants----------- */
+const maxHighScores = 5, obstacleHardCap = 100, starMax = 50;
+const obstacles = [], stars = [], audio = [];
 
 const player = {
     health: null,
     model: null,
 }
 
-const audio = [];
-let song = '';
+/* -----------Global Variables----------- */
+let scene, camera, renderer;
+let pointLight;
+let clock, keyboard,  velocity, acceleration;
+let gameOver, score, highScores, initials;
+let nearDist, farDist;
+let obstacleMax, particles;
 
 // Post Processing
 let renderScene, bloomPass, composer;
@@ -41,7 +31,6 @@ const gameTitle = document.querySelector('#title')
 const welcomeScreen = document.querySelector('#welcome-screen');
 const startBtn = document.querySelector('#start');
 
-/* HUD */
 const shields = document.querySelector('#shields');
 const shieldHUD = document.querySelector('#shieldHUD');
 const shieldBar = document.querySelector('#bar');
@@ -55,7 +44,7 @@ const endGame = document.querySelector('#endGame');
 const initialsField = document.querySelector('#enterScore')
 const highScorer = document.querySelector('#highScorer')
 
-const currentSong = document.querySelector('#current-song');
+const songInfo = document.querySelector('#data-song');
 
 const scoreElements = [];
 
@@ -92,24 +81,10 @@ function init(){
     localStorage.setItem('scores', JSON.stringify(highScores));
 
     updateScoresOverlay();
-    nearDist = -20;
-    farDist = -50;
+    nearDist = -40;
+    farDist = -60;
     
-
     audioLoader();
-    //audio.push(new Audio('audio/things.mp3'));
-    // audio[0].addEventListener('canplay', function(e) {
-    //     audio[0].play()
-    //     .then(function(data) {
-    //         console.log(data);
-    //     })
-    //     .catch(function(err) {
-    //         console.log(err);
-    //     });
-    // });
-    // audio[0].play();
-    // audio[0].artist = 'Louis Cole';
-    // audio[0].trackName = 'Things'
     audioPlayer();
 
     welcomeScreen.style.visibility = 'hidden';
@@ -130,11 +105,11 @@ function init(){
         gltf.scene.traverse(node => {
             if(node.isMesh) node.castShadow = true;
         });
-        shipModel = gltf.scene.children[0];
-        shipModel.castShadow = true;
-        shipModel.receiveShadow = true;
-        shipModel.position.z = -5.0;
-        scene.add(shipModel);
+        player.model = gltf.scene.children[0];
+        player.model.castShadow = true;
+        player.model.receiveShadow = true;
+        player.model.position.z = -5.0;
+        scene.add(player.model);
     });
     player.hitbox = new THREE.Mesh(
         new THREE.BoxGeometry( 1.1, 2.0, 0.8),
@@ -164,16 +139,18 @@ function init(){
         scene.add(particles[i]);
     }
 
-    stars = new Array(30).fill(null);
-    for(let i in stars){
-        let size = rand(0.1, 1.0);
-        stars[i] = new THREE.Mesh(
+    // stars
+    for(let i = 0; i < starMax; i++){
+        let size = randFloat(0.01, 0.1);
+        const mesh = new THREE.Mesh(
             new THREE.BoxGeometry(size, size, size),
             new THREE.MeshNormalMaterial({wireframe: true})
         );
-        //stars[i].position.set(rand(-50, 50), rand(-50, 50), rand(-10,-50));
-        stars[i].position.set(rand(-20, 20), rand(-20, 20), rand(-10,-30));
-        scene.add(stars[i])
+        mesh.position.set(rand(-20, 20), rand(-20, 20), rand(-10,-30))
+        // mesh.position.set(0,0,-6);
+        mesh.name = 'star'
+        stars.push(mesh)
+        scene.add(mesh);
     }
 
     // obstacles
@@ -185,19 +162,22 @@ function init(){
         )
         obstacle.visible = false;
         obstacle.receiveShadow = true;
+        obstacle.name = 'obstacle'
         obstacle.position.set(rand(-100,1000), rand(-20,20), rand(40, 100))
         obstacles.push(obstacle);
         scene.add(obstacle)
     }
 
     // lighting
-    scene.add(new THREE.AmbientLight(0x111111))
+    scene.add(new THREE.AmbientLight(0xDEDEDE))
 
     pointLight = new THREE.PointLight(0xffffff, 0.7);
     pointLight.castShadow = true;
     pointLight.position.set(0,10,6)
-   
     scene.add(pointLight)
+
+
+   
     
     // renderer
     renderer = new THREE.WebGLRenderer();
@@ -226,7 +206,6 @@ function init(){
         composer.setSize(window.innerWidth, window.innerHeight)
         renderer.setSize(window.innerWidth, window.innerHeight);
     }, false);
-    
 
     // time delayed call to gameLoop
     setTimeout(gameLoop, 1000);
@@ -235,11 +214,11 @@ function init(){
 function gameLoop(){
     pointLight.lookAt(camera)
     score = ~~clock.getElapsedTime();
+    bloomTweak();
 
     runningScore.innerHTML = `SCORE: ${score}`
 
     songDisplay();
-    if(score >= 60) rotator();
     updateShields();
 
     //shieldBar.style.width = `${player.health}%`;
@@ -247,7 +226,6 @@ function gameLoop(){
     if ( player.health <= 0 ){
         gameOver = true;
     }
-    
     keyControls();
 
     // motion 101
@@ -255,6 +233,10 @@ function gameLoop(){
     if(velocity > 10){
         velocity *= 0;
     }
+
+    // difficulty scaling
+    if(score >= 60) rotator();
+    if(score >= 10) nearReduce();
     
     // faster = more obstacles
     obstacleMax > obstacles.length ?
@@ -268,17 +250,16 @@ function gameLoop(){
     }
 
     /* Collision Detection */
-    
-
     checkCollisions();
     
     // motion logic for obstacles
     for (let i of obstacles){
         i.position.z += velocity;
-        if (i.position.z > 1.0) {
+        if (i.position.z > .1) {
+            i.material = new THREE.MeshLambertMaterial({color: randomColor(), transparent: true, opacity: randFloat(.60, .80)})
             i.position.x = rand(-20, 20)
             i.position.y = rand(-5, 20)
-            i.position.z = rand(nearDist, farDist);   
+            i.position.z = rand(nearDist, farDist);
         }
     }
     // motion for particles
@@ -289,21 +270,17 @@ function gameLoop(){
         }
         particle.position.z += velocity * 4;
         // z boundary
-        if(particle.position.z > 1){
+        if(particle.position.z > .1){
             particle.position.set(rand(-20,20), rand(-10, 10), rand(-20,-100));
         }
     }
     // motion logic for stars
     for(let star of stars){
-        star.position.z += velocity/100;
+        star.rotation.z += velocity/10;
         star.rotation.x += 0.01;
         star.rotation.y += 0.01;
-        if(star.position.z > 1){
-            star.position.set(rand(-20, 20), rand(-20, 20), rand(-10,-30));
-            //star.position.set(rand(-20, 20), rand(-5, 5), rand(-10,-50));
-        }
-
     }
+
     renderer.clear();
     composer.render();
     camera.updateProjectionMatrix();

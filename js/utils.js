@@ -1,11 +1,15 @@
-// random fn
+/* ---------- Math.random functions ---------- */
 const rand = (min, max) => Math.floor(Math.random() * (max - min)) + min
 
-// random hex
+const randFloat = (min, max) => Math.random() * (max - min) + min
+
+// random Hex digit //
 const randomHex = () => {
     const hexVals = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F'];
     return hexVals[Math.floor(Math.random() * hexVals.length)]
 };
+
+// random Hex color //
 const randomColor = () => {
     const hexVal = ['#'];
     for(let i = 0; i < 6; i++){
@@ -14,7 +18,7 @@ const randomColor = () => {
     return hexVal.join('')
 };
 
-// dom Functions
+// dom Functions //
 const updateScoresOverlay = () => {
     for(let i = 0; i < maxHighScores; i++){
         if(highScores[i]){
@@ -22,7 +26,7 @@ const updateScoresOverlay = () => {
         }
     }
     scoresOverlay.textContent = '';
-    scoreElements.forEach(s => {
+    scoreElements.forEach( s => {
         scoresOverlay.innerHTML += `<li>${s.score} ${s.initials.toUpperCase()}</li>`
     })
 }
@@ -31,59 +35,80 @@ const randomFromArray = (array) => array[~~(Math.random()*array.length)]
 
 const randomTitle = () => {
     const prefixes = ['HYPER', 'MEGA', 'SUPER'];
-    const suffixes = ['SPACE', 'LIGHT', 'TIME'];
+    const suffixes = ['SPACE', 'LIGHT', 'GROOVE'];
     const nouns = ['CUBE', 'BOX', 'POLYGON', 'GEOMETRY'];
     const endNouns = ['DRIFTER', 'GLIDER', 'COLLIDER', 'DODGER', 'RUNNER', 'FLYER'];
     const phrase = `${randomFromArray(prefixes)}${randomFromArray(suffixes)} ${randomFromArray(nouns)} ${randomFromArray(endNouns)}`;
     gameTitle.textContent = phrase;
 }
 
+const recolor = () => {
+    obstacles.forEach(obstacle => {
+        obstacle.material = new THREE.MeshLambertMaterial({color: randomColor(), transparent: true, opacity: .75});
+    })
+}
 
-// keyboard controls
+const remesher = () => {
+    for(let obstacle of obstacles){
+        obstacle.material = new THREE.MeshNormalMaterial({wireframe: true})
+    }
+    setTimeout(function(){
+        for(let obstacle of obstacles){
+            obstacle.material = new THREE.MeshLambertMaterial({color: randomColor(), transparent: true, opacity: 0.75})
+        }
+        player.invulnerability = false;
+    }, 5000)
+}
+
 const keyControls = () => {
     if( keyboard.pressed( 'W' ) ) {
-        if( shipModel.position.y < 3.0 ) shipModel.position.y += 0.1
+        if( player.model.position.y < 3.0 ) player.model.position.y += 0.1
     }
     if( keyboard.pressed( 'S' ) ) {
-        if( shipModel.position.y > -2.5 ) shipModel.position.y -= 0.1;
+        if( player.model.position.y > -2.5 ) player.model.position.y -= 0.1;
     }
     if( keyboard.pressed( 'A' ) ) {
-        if( shipModel.position.x > -5.0 ) shipModel.position.x -= 0.1;
-        shipModel.rotation.y += 0.1;
+        if( player.model.position.x > -5.0 ) player.model.position.x -= 0.1;
+        player.model.rotation.y += 0.1;
     }
     if( keyboard.pressed( 'D' ) ) {
-        if( shipModel.position.x < 5.5 ) shipModel.position.x += 0.1;
-        shipModel.rotation.y -= 0.1;
+        if( player.model.position.x < 5.5 ) player.model.position.x += 0.1;
+        player.model.rotation.y -= 0.1;
+    }
+    if( keyboard.pressed( 'space' ) ) {
+        remesher();
     }
 }
 
+// Adapted from http://stemkoski.github.io/Three.js/Collision-Detection.html
 const checkCollisions = () => {
-    const originPoint = shipModel.position.clone();
+
+    const originPoint = player.model.position.clone();
     player.hitbox.position.set(originPoint.x, originPoint.y, originPoint.z);
 
-    const rot = shipModel.rotation.clone();
+    const rot = player.model.rotation.clone();
     player.hitbox.rotation.set(rot.x, rot.y, rot.z);
-    
+
     for(let vertexIndex = 0; vertexIndex < player.hitbox.geometry.vertices.length; vertexIndex++){
         const localVertex = player.hitbox.geometry.vertices[vertexIndex].clone();
         const globalVertex = localVertex.applyMatrix4( player.hitbox.matrix );
-        const dirVector = globalVertex.sub(player.hitbox.position);
+        const dirVector = globalVertex.sub( player.hitbox.position );
         
         const ray = new THREE.Raycaster(originPoint, dirVector.clone().normalize())
+
         const collisions = ray.intersectObjects(obstacles);
         if(collisions.length > 0 && collisions[0].distance < dirVector.length()){
-            player.health -= 1;
-            // hit !
+                player.health -=1;
         }
     }
-}
 
+}
 const rotator = () => {
     for(let obj of obstacles){
         rot = rand(0.01, 0.05) * Math.abs(Math.sin(velocity));
-        obj.rotation.z += rot
+        obj.rotation.z += rot;
     }
-}
+};
 
 const resetRotation = () => {
     for(let obj of obstacles){
@@ -91,12 +116,17 @@ const resetRotation = () => {
     }
 };
 
+const resetDistances = () => {
+    nearDist = -40;
+    farDist = -60;
+};
+
 // splash screen
 const displayWelcome = () => {
     randomTitle();
     welcomeScreen.style.visibility = 'visible';
     highScoreHUD.style.visibility = 'hidden';
-}
+};
 
 const displayEndingScreen = () => {
     if(clock.running) clock.stop();
@@ -109,16 +139,23 @@ const displayEndingScreen = () => {
     velocity = 0.01;
 }
 
+const repositionStars = () => {
+    stars.forEach(star => {
+        star.position.set(rand(-20, 20), rand(-20, 20), rand(-10,-30));
+    })
+}
 
 // re-init function
 const replay = () =>{
     // ensure highScore input is hidden
     highScorer.style.visibility = 'hidden'
     resetRotation();
+    resetDistances();
+    repositionStars();
 
     // reset game stuff
-    shipModel.position.set(0,0,-5)
-    shipModel.rotation.set(Math.PI/2,0,0)
+    player.model.position.set(0,0,-5)
+    player.model.rotation.set(Math.PI/2,0,0)
     obstacleMax = 10;
     for(let i = 0; i < obstacles.length; i++){
         obstacles[i].position.set(rand(-100,1000), rand(-20,20), rand(40, 100))
@@ -155,11 +192,22 @@ const audioLoader = () => {
 }
 
 const songDisplay = () => {
-    currentSong.style.visibility = 'visible'
-    currentSong.textContent = `Music: "${audio[0].trackName}" by ${audio[0].artist}`;
+    songInfo.style.visibility = 'visible'
+    songInfo.textContent = `Music: "${audio[0].trackName}" by ${audio[0].artist}`;
 }
 
 const audioPlayer = () => {
     audio[0].play();
     audio[0].loop = true;
+}
+
+const bloomTweak = () => {
+    bloomPass.strength = 0.5 + Math.abs(0.2 + Math.cos( 2.0 * clock.getElapsedTime() / 2 )) / 8
+}
+
+const nearReduce = () => {
+    nearDist += 0.01;
+    if(nearDist > -6){
+        nearDist = -6
+    }
 }
