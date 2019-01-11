@@ -50,9 +50,8 @@ composer.render();
 ```
 
 # Particles / Obstacles Logic
-All geometries (aside from ship) are generated procedurally during initialization (no models)
+All geometries (aside from ship) are generated procedurally using THREE's `Mesh` class.  In general, all objects in the scene are `Meshes` which are themselves comprised of a `Geometry` object and a `Material` object.
 ```javascript
-/* 10 particles */
 mesh = new THREE.Mesh(geometry, material);
 scene.add(mesh);
 ```
@@ -76,13 +75,15 @@ This gives the illusion of a continous stream of objects!
 
 ## Known Bugs / Unsolved Issues
 
-# Collision Detection
-- Due to 8 faulty collisions detected during initialization, player starts with 92% HP...
+### Collision Detection
+- Due to 8 faulty collisions detected during initialization, player starts with 92% HP.
 
-- Current collision detection logic means that the faster you move, the less damage you take...
+- Current collision detection logic means that the faster you move, the less damage you take.
 
 ## Icebox / Future Plans
-- Implement lasers... pew pew.
-- Add particles on collision
-- Animate start and end splashes.
-- Custom GLSL shader for ship's booster/engine.
+- **Refactor code to be object oriented**
+    - Use async programming instead of overly liberal applications of  `setTimeout`.
+- **Implement lasers**
+- Expand collision detection to include other objects besides `obstacles`.
+- Add particles on collisions
+- Handwrite GLSL vertex and fragment shaders.
