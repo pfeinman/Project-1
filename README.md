@@ -1,4 +1,5 @@
-<!-- # Hyperspace Cube Dodger -->
+# Project 1
+- aka "Hyperspace Cube Glider"
 
 ## Technologies Used
 - JavaScript, HTML, CSS
