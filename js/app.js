@@ -2,7 +2,7 @@
 
 /* -----------Global Constants----------- */
 const maxHighScores = 5, obstacleHardCap = 100, starMax = 50;
-const obstacles = [], stars = [] // audio = [];
+const obstacles = [], stars = [];
 
 const player = {
     health: null,
@@ -18,6 +18,10 @@ let clock, keyboard,  velocity, acceleration;
 let gameOver, score, highScores, initials;
 let nearDist, farDist;
 let obstacleMax, particles;
+let firstTry;
+
+let splashScene, splashCamera, splashRenderer, splashMesh;
+let splashComposer, splashRenderScene, splashBloom;
 
 // Post Processing
 let renderScene, bloomPass, composer;
@@ -47,6 +51,7 @@ const initialsField = document.querySelector('#enterScore')
 const highScorer = document.querySelector('#highScorer')
 
 const songInfo = document.querySelector('#data-song');
+const splashCanvas = document.querySelector('#splash-graphic')
 
 const scoreElements = [];
 
@@ -74,7 +79,8 @@ scoreButton.addEventListener('click', () => {
 });
 
 /* ----do it---- */
-splash();
+initSplash();
+// splash();
 /* ------------ */
 
 function init(){
@@ -153,7 +159,7 @@ function init(){
     }
 
     // obstacles
-    obstacleMax = 10;
+    obstacleMax = 0;
     for(let i = 0; i < obstacleHardCap; i++){
         let obstacle = new THREE.Mesh(
             new THREE.BoxGeometry(rand(1,5),rand(1,5),rand(4,5)),
@@ -161,7 +167,6 @@ function init(){
         )
         obstacle.visible = false;
         obstacle.receiveShadow = true;
-        obstacle.name = 'obstacle'
         obstacle.position.set(rand(-100,1000), rand(-20,20), rand(40, 100))
         obstacles.push(obstacle);
         scene.add(obstacle)
@@ -206,16 +211,20 @@ function init(){
         renderer.setSize(window.innerWidth, window.innerHeight);
     }, false);
 
+    firstTry = true;
     playAudio();
-
     // call gameLoop in a second
-    setTimeout(gameLoop, 1000);
+    setTimeout(gameLoop, 500);
 }
 
 function gameLoop(){
     pointLight.lookAt(camera)
     score = ~~clock.getElapsedTime();
     bloomTweak();
+
+    if(firstTry){
+        intro();
+    }
 
     runningScore.innerHTML = `SCORE: ${score}`
 
@@ -232,6 +241,9 @@ function gameLoop(){
     if(velocity > 10){
         velocity = 10;
     }
+
+    // remesh effect
+    if(score > 60 && score % 31 === 0) remesher(2000)
 
     // difficulty scaling
     if(score >= 60) rotator();
@@ -252,15 +264,18 @@ function gameLoop(){
     checkCollisions();
     
     // motion logic for obstacles
-    for (let i of obstacles){
+    for (let i of obstacles) {
         i.position.z += velocity;
         if (i.position.z > .1) {
-            i.material = new THREE.MeshLambertMaterial({color: randomColor(), transparent: true, opacity: randFloat(.60, .80)})
+            if(!i.override) {
+                i.material = new THREE.MeshLambertMaterial({color: randomColor(), transparent: true, opacity: randFloat(.60, .80)})
+            }
             i.position.x = rand(-20, 20)
             i.position.y = rand(-5, 20)
             i.position.z = rand(nearDist, farDist);
         }
     }
+
     // motion for particles
     for(let particle of particles){
         if(particle.position.x == 0 && particle.position.y == 0){

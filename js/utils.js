@@ -34,10 +34,10 @@ const updateScoresOverlay = () => {
 const randomFromArray = (array) => array[~~(Math.random()*array.length)]
 
 const randomTitle = () => {
-    const prefixes = ['HYPER', 'MEGA', 'SUPER'];
+    const prefixes = ['HYPER'];
     const suffixes = ['SPACE', 'LIGHT', 'GROOVE'];
-    const nouns = ['CUBE', 'BOX', 'POLYGON', 'GEOMETRY'];
-    const endNouns = ['DRIFTER', 'GLIDER', 'COLLIDER', 'DODGER', 'RUNNER', 'FLYER'];
+    const nouns = ['CUBE', 'BOX', 'POLYGON', 'GEOMETRY', 'STAR'];
+    const endNouns = ['DRIFTER', 'GLIDER', 'COLLIDER', 'DODGER', 'RUNNER', 'FLYER', 'SURFER'];
     const phrase = `${randomFromArray(prefixes)}${randomFromArray(suffixes)} ${randomFromArray(nouns)} ${randomFromArray(endNouns)}`;
     gameTitle.textContent = phrase;
 }
@@ -48,6 +48,18 @@ const recolor = () => {
     })
 }
 
+const intro = () => {
+    if(score === 0) remesher(14000);
+        if(score < 11 ){
+            obstacles.forEach(o => o.override = true)
+        } else {
+            obstacles.forEach(o => o.override = false) ;   
+        }
+    if(score === 46){
+        remesher(2000)
+    }
+};
+
 const remesher = (interval) => {
     for(let obstacle of obstacles){
         obstacle.material = new THREE.MeshNormalMaterial({wireframe: true})
@@ -56,7 +68,6 @@ const remesher = (interval) => {
         for(let obstacle of obstacles){
             obstacle.material = new THREE.MeshLambertMaterial({color: randomColor(), transparent: true, opacity: 0.75})
         }
-        player.invulnerability = false;
     }, interval)
 }
 
@@ -121,14 +132,6 @@ const resetDistances = () => {
     farDist = -60;
 };
 
-// splash screen
-const splash = () => {
-    randomTitle();
-    welcomeScreen.style.visibility = 'visible';
-    highScoreHUD.style.visibility = 'hidden';
-    audioLoader();
-};
-
 const displayEndingScreen = () => {
     if(clock.running) clock.stop();
     document.querySelector('#endGame > p > span').textContent = score;
@@ -148,6 +151,7 @@ const repositionStars = () => {
 
 // re-init function
 const replay = () =>{
+    firstTry = false;
     // ensure highScore input is hidden
     highScorer.style.visibility = 'hidden'
     resetRotation();
