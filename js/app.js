@@ -179,9 +179,6 @@ function init(){
     pointLight.castShadow = true;
     pointLight.position.set(0,10,6)
     scene.add(pointLight)
-
-
-   
     
     // renderer
     renderer = new THREE.WebGLRenderer();

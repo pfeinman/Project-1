@@ -1,12 +1,12 @@
 /* ---------- Math.random functions ---------- */
-const rand = (min, max) => Math.floor(Math.random() * (max - min)) + min
+const rand = (min, max) => ~~(Math.random() * (max - min)) + min
 
 const randFloat = (min, max) => Math.random() * (max - min) + min
 
 // random Hex digit //
 const randomHex = () => {
     const hexVals = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F'];
-    return hexVals[Math.floor(Math.random() * hexVals.length)]
+    return hexVals[~~(Math.random() * hexVals.length)]
 };
 
 // random Hex color //
