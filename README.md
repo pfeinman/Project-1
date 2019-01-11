@@ -10,6 +10,12 @@
 - Node HTTP-Server for development
   - Necessary to circumvent Chrome's cross-origin policy when importing 3D Models.
 
+# Challenges
+- Attempting to rapidly develop this project while learning a suite of new technologies and workflows.  This is the first project I've used THREE.js for.
+
+- Writing code for animation loops which wouldn't cause massive errors because it's being run 60 times per second.
+    - Ended up writing a lot of code that is "asynchronous" inasmuch that it breaks the normal control flow of the program, but without actual threading.
+        - Too much `setTimeout`, not enough callbacks.
 # Art Pipeline
 1. Export UV Layout for Starship
 
